@@ -3,10 +3,9 @@
 //
 
 #include <stdlib.h>
-#include <getopt.h>
-#include <eeprom.h>
-#include <zlib.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <zlib.h>
 #include "eeprom.h"
 #include "crc.h"
 
@@ -25,7 +24,7 @@ void update_crc(systemid_t *e) {
 }
 
 
-int8_t check_crc(systemid_t *e) {
+uint8_t check_crc(systemid_t *e) {
 	uint32_t crc = (uint32_t)  crc32(0L, (void *) e, EEPROM_SIZE - 4);
 	if (cpu_to_be32(crc) == e->crc32) {
 		return EXIT_SUCCESS;

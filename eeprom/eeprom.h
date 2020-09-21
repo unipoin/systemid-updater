@@ -5,6 +5,8 @@
 #ifndef SYSTEMID_UPDATER_EEPROM_H
 #define SYSTEMID_UPDATER_EEPROM_H
 
+#include <stdint.h>
+
 #define EEPROM_SIZE sizeof(systemid_t)
 
 typedef struct {
