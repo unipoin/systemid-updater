@@ -151,7 +151,7 @@ void check_eeprom(systemid_t *e) {
 	for (uint8_t i = 0; i < CCID_MAC_PORTS && i < e->macsize; i++) {
 		fprintf(stdout, "mac%d: %02X:%02X:%02X:%02X:%02X:%02X\n", i+1, e->mac[i][0],e->mac[i][1],e->mac[i][2],e->mac[i][3],e->mac[i][4],e->mac[i][5]);
 	}
-	fprintf(stdout, "CRC: %08X\n", e->crc32);
+	fprintf(stdout, "CRC: %08X\n", ntohl(e->crc32));
 }
 
 
