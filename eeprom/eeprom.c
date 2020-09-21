@@ -10,8 +10,8 @@
 #include "eeprom.h"
 #include "crc.h"
 
-#define FIXED_MAC_OFFSET    0xFA
-#define TAG_ID_CCID            "CCID"
+#define FIXED_MAC_OFFSET	0xFA
+#define TAG_ID_CCID 		"CCID"
 
 uint8_t read_fixed_mac(uint8_t *mac, const char *eeprom_path) {
 	FILE *filehandle;
@@ -146,7 +146,7 @@ void check_eeprom(systemid_t *e) {
 	fprintf(stdout, "serialnumber: %s\n", e->sn);
 	fprintf(stdout, "build date: %02d.%02d.20%02d %02d:%02d:%02d\n", e->date.DD, e->date.MM, e->date.YY, e->date.hh, e->date.mm, e->date.ss);
 	fprintf(stdout, "mac flags: %02X\n", e->macflags);
-	for (uint8_t i = 0; i < 6 && i < e->macsize; i++) {
+	for (uint8_t i = 0; i < CCID_MAC_PORTS && i < e->macsize; i++) {
 		fprintf(stdout, "mac%d: %02X:%02X:%02X:%02X:%02X:%02X\n", i+1, e->mac[i][0],e->mac[i][1],e->mac[i][2],e->mac[i][3],e->mac[i][4],e->mac[i][5]);
 	}
 	fprintf(stdout, "CRC: %08X\n", e->crc32);
@@ -181,7 +181,7 @@ void write_hw_rev(systemid_t *e, char *hw_rev) {
 
 void write_mac_address(uint8_t *emac, char *mac) {
 	char *tok = strtok(mac, ":");
-	for (uint8_t i = 0; i < 6 && tok != NULL; i++) {
+	for (uint8_t i = 0; i < CCID_MAC_PORTS && tok != NULL; i++) {
 		uint8_t block = (uint8_t) strtol(tok, NULL, 16);
 		emac[i] = block;
 		tok = strtok(NULL, ":");

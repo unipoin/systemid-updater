@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#define EEPROM_SIZE sizeof(systemid_t)
+#define CCID_MAC_PORTS 8
 
-typedef struct {
+typedef struct __attribute__ ((__packed__)) {
 	uint8_t YY;
 	uint8_t MM;
 	uint8_t DD;
@@ -18,20 +18,21 @@ typedef struct {
 	uint8_t ss;
 } systemid_bcd_date_t;
 
-typedef struct {
+typedef struct __attribute__ ((__packed__)) {
 	char tagid[4];
 	uint8_t major;
 	uint8_t minor;
 	char sn[10];
 	char errata[2];
 	systemid_bcd_date_t date;
+	uint8_t res_0[40];
 	uint8_t macsize;
 	uint8_t macflags;
-	uint8_t mac[6][6];
+	uint8_t mac[CCID_MAC_PORTS][6];
 	uint32_t crc32;
 } systemid_t;
 
-
+#define EEPROM_SIZE sizeof(systemid_t)
 
 
 uint8_t read_eeprom(systemid_t *e, const char *eeprom_path);

@@ -38,16 +38,15 @@ void print_usage(char *prg)
 					" -u, --update          update fields in the current EEPROM\n"
 					" -r, --hw-rev          hardware revision style: 'v<major>.<minor>.<errata>\n"
 					" -s  --sn              Serialnumber: 9 characters\n"
-					"     --hw_mac          read hw-mac-addr from read only eeprom\n"
-					"     --mac1=mac-addr   1. mac-addr to write to eeprom\n"
-					"     --mac2=mac-addr   2. mac-addr to write to eeprom\n"
-					"     --mac3=mac-addr   3. mac-addr to write to eeprom\n"
-					"     --mac4=mac-addr   4. mac-addr to write to eeprom\n"
-					"     --mac5=mac-addr   5. mac-addr to write to eeprom\n"
-					"     --mac6=mac-addr   6. mac-addr to write to eeprom\n"
-					" -v, --verbose		    be verbose\n"
-					" -h  --help		    this help\n",
+					"     --hw_mac          read hw-mac-addr from read only eeprom\n",
 					prg);
+	for (uint8_t i = 1; i <= CCID_MAC_PORTS; i++) {
+		fprintf(stderr, "     --mac%d=mac-addr   %d. mac-addr to write to eeprom\n",i, i);
+	}
+	fprintf(stderr, " -v, --verbose         be verbose\n"
+					" -h  --help            this help\n"
+					);
+
 }
 
 
@@ -56,7 +55,7 @@ int main(int argc, char **argv) {
 	uint8_t check = 0, verbose = 0, init = 0, update = 0, write = 0, hw_mac = 0;
 	int max_mac = 0;
 	char *eeprom_path = EEPROM;
-	char macs[6][19] = {'\0'};
+	char macs[CCID_MAC_PORTS][19] = {'\0'};
 	char hw_rev[10] = {'\0'};
 	char sn[10] = {'\0'};
 	uint8_t exitcode = EXIT_SUCCESS;
@@ -80,10 +79,14 @@ int main(int argc, char **argv) {
 			{ "mac4",		required_argument,		0, 0 },
 			{ "mac5",		required_argument,		0, 0 },
 			{ "mac6",		required_argument,		0, 0 },
+			{ "mac7",		required_argument,		0, 0 },
+			{ "mac8",		required_argument,		0, 0 },
 			{ 0,		0,			0, 0},
 	};
+	#if CCID_MAC_PORTS != 8
+	#error the long_options[] has to be adapted to the differnt defined CCID_MAC_PORTS value!
+	#endif
 	int option_index = 0;
-	//									"ehpqrvi:l:"
 	while ((opt = getopt_long(argc, argv, "ciuwr:s:vh", long_options, &option_index)) != -1) {
 		switch (opt) {
 			case 0:
@@ -94,7 +97,7 @@ int main(int argc, char **argv) {
 				/* if we one of the mac addresses are added, copy it*/
 				if (strncmp(long_options[option_index].name, "mac", 3) == 0) {
 					uint8_t i = (uint8_t) strtol(&long_options[option_index].name[3], NULL, 10);
-					if (i > 0 && i <= 6) {
+					if (i > 0 && i <= CCID_MAC_PORTS) {
 						//mac1-6 will be internal stored as mac0-5
 						strncpy(macs[i - 1], optarg, 19);
 						//bit 0-6 is used
@@ -185,7 +188,7 @@ int main(int argc, char **argv) {
 
 	// set mac addresses if given
 	if (max_mac) {
-		for (uint8_t i = 0; i < 6; i++) {
+		for (uint8_t i = 0; i < CCID_MAC_PORTS; i++) {
 			if(max_mac & (1<<i)){
 				write_mac_address(eeprom.mac[i], macs[i]);
 				if (eeprom.macsize < i+1) {
