@@ -36,7 +36,7 @@ void print_usage(char *prg)
 					" -i, --init            start with an empty EEPROM (will overwrite everything)\n"
 					" -w, --write           write eeprom to given file\n"
 					" -u, --update          update fields in the current EEPROM\n"
-					" -r, --hw-rev          hardware revision style: 'v<major>.<minor>.<errata>\n"
+					" -r, --hw_rev          hardware revision style: 'v<major>.<minor>.<errata>\n"
 					" -s  --sn              Serialnumber: 9 characters\n"
 					"     --hw_mac          read hw-mac-addr from read only eeprom\n",
 					prg);
