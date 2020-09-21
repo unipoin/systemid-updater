@@ -93,6 +93,8 @@ void print_eeprom(systemid_t *e) {
 	}
 }
 
+#define CONVERT_DATE_TO_HEX(date) ((uint8_t) ((date/10)<<4) | (uint8_t) (date%10))
+
 uint8_t init_eeprom(systemid_t *e, const char *eeprom_path, uint8_t read_hw_mac) {
 	uint8_t exitcode = EXIT_SUCCESS;
 	// set tag-id
@@ -103,12 +105,12 @@ uint8_t init_eeprom(systemid_t *e, const char *eeprom_path, uint8_t read_hw_mac)
 	if(now != -1) {
 		struct tm *p_utc_now = gmtime(&now);
 		if(p_utc_now != NULL) {
-			e->date.YY = (uint8_t) (p_utc_now->tm_year % 100);
-			e->date.MM = (uint8_t) (p_utc_now->tm_mon + 1);
-			e->date.DD = (uint8_t) p_utc_now->tm_mday;
-			e->date.hh = (uint8_t) p_utc_now->tm_hour;
-			e->date.mm = (uint8_t) p_utc_now->tm_min;
-			e->date.ss = (uint8_t) p_utc_now->tm_sec;
+			e->date.YY = CONVERT_DATE_TO_HEX((uint8_t) (p_utc_now->tm_year % 100));
+			e->date.MM = CONVERT_DATE_TO_HEX((uint8_t) (p_utc_now->tm_mon + 1));
+			e->date.DD = CONVERT_DATE_TO_HEX((uint8_t) (p_utc_now->tm_mday));
+			e->date.hh = CONVERT_DATE_TO_HEX((uint8_t) (p_utc_now->tm_hour));
+			e->date.mm = CONVERT_DATE_TO_HEX((uint8_t) (p_utc_now->tm_min));
+			e->date.ss = CONVERT_DATE_TO_HEX((uint8_t) (p_utc_now->tm_sec));
 		} else {
 			exitcode = EXIT_FAILURE;
 		}
@@ -144,7 +146,7 @@ void check_eeprom(systemid_t *e) {
 		fprintf(stdout, "hw_rev: v%d.%d\n", e->major, e->minor);
 	}
 	fprintf(stdout, "serialnumber: %s\n", e->sn);
-	fprintf(stdout, "build date: %02d.%02d.20%02d %02d:%02d:%02d\n", e->date.DD, e->date.MM, e->date.YY, e->date.hh, e->date.mm, e->date.ss);
+	fprintf(stdout, "build date: %02X.%02X.20%02X %02X:%02X:%02X\n", e->date.DD, e->date.MM, e->date.YY, e->date.hh, e->date.mm, e->date.ss);
 	fprintf(stdout, "mac flags: %02X\n", e->macflags);
 	for (uint8_t i = 0; i < CCID_MAC_PORTS && i < e->macsize; i++) {
 		fprintf(stdout, "mac%d: %02X:%02X:%02X:%02X:%02X:%02X\n", i+1, e->mac[i][0],e->mac[i][1],e->mac[i][2],e->mac[i][3],e->mac[i][4],e->mac[i][5]);
