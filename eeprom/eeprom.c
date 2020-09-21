@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <sys/time.h>
+#include <time.h>
 #include <string.h>
 #include "eeprom.h"
 #include "crc.h"
@@ -35,7 +35,7 @@ uint8_t read_fixed_mac(uint8_t *mac, const char *eeprom_path) {
 }
 
 uint8_t read_eeprom(systemid_t *e, const char *eeprom_path) {
-	struct __sFILE *filehandle;
+	FILE *filehandle;
 	uint8_t exitcode = EXIT_SUCCESS;
 
 	filehandle = fopen(eeprom_path, "rb");
@@ -54,7 +54,7 @@ uint8_t read_eeprom(systemid_t *e, const char *eeprom_path) {
 }
 
 uint8_t write_eeprom(systemid_t *e, const char *eeprom_path) {
-	struct __sFILE *filehandle;
+	FILE *filehandle;
 	uint8_t exitcode = EXIT_SUCCESS;
 
 	filehandle = fopen(eeprom_path, "wb");
@@ -99,7 +99,7 @@ uint8_t init_eeprom(systemid_t *e, const char *eeprom_path, uint8_t read_hw_mac)
 	memcpy(e->tagid, TAG_ID_CCID, 4);
 
 	// set current date as build date
-	__darwin_time_t now = time(NULL);
+	time_t now = time(NULL);
 	if(now != -1) {
 		struct tm *p_utc_now = gmtime(&now);
 		if(p_utc_now != NULL) {
