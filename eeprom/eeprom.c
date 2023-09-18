@@ -175,7 +175,14 @@ void write_hw_rev(systemid_t *e, char *hw_rev) {
 			if (tok != NULL) {
 				printf("errata: %s\n", tok);
 				strncpy(e->errata,tok,2);
+			} else {
+				e->errata[0] = '\0';
+				e->errata[1] = '\0';
 			}
+		} else {
+			e->minor = 0;
+			e->errata[0] = '\0';
+			e->errata[1] = '\0';
 		}
 	}
 }
