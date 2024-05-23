@@ -17,7 +17,7 @@
 
 #ifndef DEBUG
 #define EEPROM_PATH "/sys/bus/nvmem/devices"
-#define EEPROM_NAME "0-00500"
+#define EEPROM_NAME "system_id2"
 #define EEPROM (EEPROM_PATH "/" EEPROM_NAME "/nvmem")
 #else
 #define EEPROM "./debug_eeprom"
