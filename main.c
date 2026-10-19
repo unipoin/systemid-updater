@@ -59,6 +59,7 @@ int main(int argc, char **argv) {
 	char hw_rev[10] = {'\0'};
 	char sn[10] = {'\0'};
 	uint8_t exitcode = EXIT_SUCCESS;
+	uint8_t crc_status = EXIT_SUCCESS;
 
 	systemid_t eeprom;
 	memset((void *) &eeprom, 0, EEPROM_SIZE);
@@ -165,6 +166,10 @@ int main(int argc, char **argv) {
 	} else {
 		if (update) {
 			exitcode = read_eeprom(&eeprom, eeprom_path);
+			// verify the content as read, before update_crc() below recalculates the CRC
+			if (exitcode == EXIT_SUCCESS) {
+				crc_status = check_crc(&eeprom);
+			}
 		} else {
 			exitcode = init_eeprom(&eeprom, eeprom_path, hw_mac);
 		}
@@ -199,7 +204,6 @@ int main(int argc, char **argv) {
 	}
 
 	update_crc(&eeprom);
-	check_crc(&eeprom);
 
 	// dump eeprom content
 	if (exitcode==EXIT_SUCCESS && check) {
@@ -212,5 +216,10 @@ int main(int argc, char **argv) {
 		exitcode = write_eeprom(&eeprom, eeprom_path);
 	}
 
-	return 0;
+	// --check reports an invalid CRC of the read content as failure
+	if (exitcode == EXIT_SUCCESS && check && crc_status != EXIT_SUCCESS) {
+		exitcode = EXIT_FAILURE;
+	}
+
+	return exitcode;
 }
